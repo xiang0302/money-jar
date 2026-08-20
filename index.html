@@ -66,7 +66,6 @@
   .section{padding:22px 18px 4px;}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
   .section-title{font-size:19px;font-weight:700;}
-  .section-link{font-size:13px;color:var(--green);background:none;border:none;font-weight:700;cursor:pointer;font-family:inherit;}
   .empty{
     text-align:center;padding:34px 18px;color:var(--ink-soft);font-size:13.5px;
     background:var(--card);border:1.5px dashed var(--line);border-radius:18px;line-height:1.7;
@@ -86,12 +85,6 @@
   .jar-name{font-size:15px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
   .jar-value{font-size:24px;font-weight:500;letter-spacing:-0.3px;}
   .jar-value.neg{color:var(--red);}
-  .jar-plan{font-size:12px;color:var(--ink-soft);margin-top:3px;}
-  .jar-menu-btn{
-    width:30px;height:30px;border-radius:9px;border:none;background:transparent;color:var(--ink-soft);
-    font-size:18px;cursor:pointer;flex-shrink:0;
-  }
-  .jar-menu-btn:active{background:rgba(0,0,0,0.06);}
   .jar-detail{margin-top:12px;font-size:12.5px;color:var(--ink-soft);}
   .progress-track{height:7px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:6px;}
   .progress-fill{height:100%;border-radius:5px;transition:width .3s ease;}
@@ -115,738 +108,448 @@
   .rec-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
   .rec-mid{flex:1;min-width:0;}
   .rec-jar{font-size:14px;font-weight:700;}
-  .rec-note{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
-  .rec-date{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .rec-note{font-size:11.5px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rec-right{text-align:right;}
   .rec-amt{font-size:15px;font-weight:700;}
-  .rec-amt.in{color:var(--green);}
-  .rec-amt.out{color:var(--red);}
-  .rec-del{background:none;border:none;color:var(--ink-soft);font-size:16px;cursor:pointer;padding:4px 6px;}
+  .rec-amt.sub{color:var(--red);}
+  .rec-amt.add{color:var(--green);}
+  .rec-time{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .rec-del{background:none;border:none;color:#b2ada3;font-size:15px;cursor:pointer;padding:4px;margin-left:4px;}
 
-  /* FAB */
-  .fab-bar{
-    position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;
-    background:linear-gradient(180deg,rgba(242,237,226,0),var(--cream) 30%);
-    padding:16px 18px 20px;display:flex;gap:10px;
+  /* MODALS */
+  .modal-mask{
+    position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(18,22,31,0.55);
+    display:flex;align-items:flex-end;justify-content:center;z-index:100;
+    opacity:0;pointer-events:none;transition:opacity .2s ease;
   }
-
-  /* MODAL */
-  .overlay{
-    position:fixed;inset:0;background:rgba(20,22,30,0.55);display:none;align-items:flex-end;justify-content:center;z-index:50;
+  .modal-mask.active{opacity:1;pointer-events:auto;}
+  .modal{
+    background:#fff;width:100%;max-width:520px;border-radius:24px 24px 0 0;
+    padding:22px 20px 32px;transform:translateY(100%);transition:transform .25s cubic-bezier(0.1, 0.9, 0.2, 1);
   }
-  .overlay.show{display:flex;}
-  .sheet{
-    background:var(--cream);width:100%;max-width:520px;border-radius:24px 24px 0 0;
-    padding:20px 20px 28px;max-height:88vh;overflow-y:auto;animation:slideup .22s ease;
+  .modal-mask.active .modal{transform:translateY(0);}
+  .modal-title{font-size:18px;font-weight:700;margin-bottom:16px;}
+  .form-group{margin-bottom:14px;}
+  .form-label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
+  .form-input,.form-select,.form-textarea{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;
+    font-size:15px;font-family:inherit;background:#fff;outline:none;
   }
-  @keyframes slideup{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-  .sheet-title{font-size:18px;font-weight:700;margin-bottom:16px;}
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
-  .field input, .field select, .field textarea{
-    width:100%;padding:12px 13px;border-radius:12px;border:1.5px solid var(--line);
-    font-family:inherit;font-size:15px;background:#fff;color:var(--ink);
+  .form-textarea{height:90px;resize:none;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--navy);}
+  .form-row{display:flex;gap:10px;}
+  .form-row > *{flex:1;}
+  .tab-group{display:flex;background:var(--cream);padding:3px;border-radius:12px;margin-bottom:14px;}
+  .tab-btn{
+    flex:1;border:none;background:transparent;padding:10px;font-size:13.5px;font-weight:700;
+    border-radius:9px;cursor:pointer;color:var(--ink-soft);
   }
-  .field input:focus, .field select:focus{outline:none;border-color:var(--gold);}
-  .seg{display:flex;gap:8px;}
-  .seg button{
-    flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--line);background:#fff;
-    font-family:inherit;font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;
+  .tab-btn.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+  .color-picker{display:flex;gap:10px;margin-top:6px;}
+  .color-opt{
+    width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;
   }
-  .seg button.active{border-color:var(--gold);color:var(--gold-2);background:#fbf3e6;}
-  .emoji-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-  .emoji-grid button{
-    font-size:20px;padding:8px 0;border-radius:10px;border:1.5px solid var(--line);background:#fff;cursor:pointer;
+  .color-opt.active{border-color:var(--navy);transform:scale(1.1);}
+  
+  .backup-box{
+    margin-top:20px;padding:14px;background:var(--card);border-radius:14px;border:1px solid var(--line);
+    display:flex;gap:10px;
   }
-  .emoji-grid button.active{border-color:var(--gold);background:#fbf3e6;}
-  .color-row{display:flex;gap:9px;flex-wrap:wrap;}
-  .swatch{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;}
-  .swatch.active{border-color:var(--navy);}
-  .sheet-actions{display:flex;gap:10px;margin-top:18px;}
-  .sheet-actions .btn{padding:14px;}
-  .btn-cancel{background:#fff;color:var(--ink-soft);border:1.5px solid var(--line);}
-  .hint{font-size:11.5px;color:var(--ink-soft);margin-top:-6px;margin-bottom:14px;line-height:1.5;}
-  .close-x{position:absolute;right:18px;top:16px;background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;}
-  .sheet{position:relative;}
-
-  /* SPEND ANALYSIS */
-  .spend-stats{display:flex;gap:10px;margin-bottom:12px;}
-  .stat-card{
-    flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow);
-  }
-  .stat-label{font-size:11.5px;color:var(--ink-soft);margin-bottom:5px;}
-  .stat-value{font-size:19px;font-weight:700;}
-  .stat-value.red{color:var(--red);}
-  .stat-value.green{color:var(--green);}
-  .breakdown-row{margin-bottom:12px;}
-  .breakdown-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
-  .breakdown-name{font-weight:700;}
-  .breakdown-amt{color:var(--ink-soft);font-family:'DM Mono',monospace;}
-  .breakdown-track{height:9px;border-radius:6px;background:var(--line);overflow:hidden;}
-  .breakdown-fill{height:100%;border-radius:6px;}
 </style>
 </head>
 <body>
-<div class="app" id="app">
 
+<div class="app">
+  <!-- HERO HEADER -->
   <div class="hero">
-    <div class="eyebrow">钱罐分类账 · RM 系统</div>
-    <h1>各分类实际有多少钱</h1>
-    <div class="total-label">资产总计</div>
-    <div class="total-value num" id="totalValue">RM 0.00</div>
-    <div class="total-note">只算真正留在你手上的钱 · 支出预算花出去后不计入资产</div>
+    <div class="eyebrow">MONEY JAR MANAGER</div>
+    <h1>钱罐记账</h1>
+    <div class="total-label">可自由支配总额</div>
+    <div class="total-value num" id="totalBalance">¥ 0.00</div>
+    <div class="total-note" id="totalNote">加载中...</div>
     <div class="hero-actions">
-      <button class="btn btn-gold" onclick="openRecordModal()">＋ 记一笔</button>
-      <button class="btn btn-ghost" onclick="applyAutoPlans()">本月自动分配</button>
+      <button class="btn btn-gold" onclick="openAddModal()">+ 新建钱罐</button>
+      <button class="btn btn-ghost" onclick="openRecordModal()">记一笔</button>
     </div>
   </div>
 
+  <!-- JARS SECTION -->
   <div class="section">
     <div class="section-head">
-      <div class="section-title">本月支出分析</div>
-      <div class="section-link" id="monthLabel" style="cursor:default;color:var(--ink-soft);"></div>
+      <div class="section-title">我的钱罐</div>
     </div>
-    <div id="spendSummary"></div>
-    <div id="spendBreakdown"></div>
-    <div class="jar-card" id="dailyChartCard" style="display:none;">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px;">每日支出</div>
-      <canvas id="dailyChart" height="110" style="width:100%;display:block;"></canvas>
-    </div>
+    <div id="jarList"></div>
   </div>
 
+  <!-- RECENT RECORDS -->
   <div class="section">
     <div class="section-head">
-      <div class="section-title">资产类罐子</div>
-      <button class="section-link" onclick="openJarModal(null,'asset')">＋ 新增项目</button>
-    </div>
-    <div id="assetList"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">月度支出预算</div>
-      <button class="section-link" onclick="openJarModal(null,'budget')">＋ 新增预算</button>
-    </div>
-    <div id="budgetList"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">最近记录</div>
-      <div style="display:flex;gap:14px;">
-        <button class="section-link" onclick="exportBackup()">导出</button>
-        <label class="section-link" style="cursor:pointer;">导入<input type="file" id="importFile" accept="application/json" style="display:none" onchange="importBackup(event)"></label>
-      </div>
+      <div class="section-title">近期明细</div>
     </div>
     <div id="recordList"></div>
   </div>
 
-  <div class="fab-bar">
-    <button class="btn btn-gold" onclick="openRecordModal()" style="box-shadow:0 6px 18px rgba(176,129,58,0.35);">＋ 记一笔</button>
+  <!-- BACKUP & RESTORE -->
+  <div class="section" style="margin-top:20px;">
+    <div class="backup-box">
+      <button class="mini-btn" onclick="exportData()">导出数据备份</button>
+      <button class="mini-btn" onclick="openImportModal()">导入恢复数据</button>
+    </div>
   </div>
 </div>
 
-<!-- Jar Modal -->
-<div class="overlay" id="jarOverlay">
-  <div class="sheet">
-    <button class="close-x" onclick="closeModal('jarOverlay')">✕</button>
-    <div class="sheet-title" id="jarModalTitle">新增项目</div>
-
-    <div class="field">
-      <label>类型</label>
-      <div class="seg">
-        <button type="button" id="typeAssetBtn" onclick="setJarType('asset')">资产类（存钱）</button>
-        <button type="button" id="typeBudgetBtn" onclick="setJarType('budget')">支出预算（花钱）</button>
+<!-- MODAL: ADD / EDIT JAR -->
+<div class="modal-mask" id="jarModal">
+  <div class="modal">
+    <div class="modal-title" id="jarModalTitle">新建钱罐</div>
+    <div class="form-group">
+      <label class="form-label">钱罐名称</label>
+      <input type="text" class="form-input" id="jarName" placeholder="例如：生活费、旅游基金">
+    </div>
+    <div class="form-group">
+      <label class="form-label">类型</label>
+      <select class="form-select" id="jarType" onchange="toggleTypeFields()">
+        <option value="budget">预算额度型（如每月生活费，从上限扣减）</option>
+        <option value="target">储蓄目标型（如积攒旅行费，从0开始增加）</option>
+        <option value="flexible">自由存取型（普通钱包，可存可取）</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" id="amountLabel">初始金额/总预算</label>
+        <input type="number" step="0.01" class="form-input num" id="jarAmount" placeholder="0.00">
       </div>
     </div>
-
-    <div class="field">
-      <label>名称</label>
-      <input type="text" id="jarName" placeholder="例如：银行存款 / 餐饮预算">
+    <div class="form-group">
+      <label class="form-label">主题颜色</label>
+      <div class="color-picker" id="colorPicker"></div>
     </div>
-
-    <div class="field">
-      <label>图标</label>
-      <div class="emoji-grid" id="emojiGrid"></div>
-    </div>
-
-    <div class="field">
-      <label>颜色</label>
-      <div class="color-row" id="colorRow"></div>
-    </div>
-
-    <div class="field" id="initialField">
-      <label>初始余额 (RM)</label>
-      <input type="number" id="jarInitial" placeholder="0.00" step="0.01">
-    </div>
-
-    <div class="field">
-      <label id="planLabel">每月计划存入 (RM)</label>
-      <input type="number" id="jarPlan" placeholder="0.00" step="0.01">
-    </div>
-
-    <div class="field" id="freqField">
-      <label>自动重复</label>
-      <select id="jarFreq">
-        <option value="none">不自动，仅手动记录</option>
-        <option value="monthly">每月自动存入一次</option>
-        <option value="weekly">每周自动存入一次</option>
-        <option value="yearly">每年自动存入一次</option>
-      </select>
-      <div class="hint">到期后点击首页「本月自动分配」即会按计划金额自动入账</div>
-    </div>
-
-    <div class="sheet-actions">
-      <button class="btn btn-cancel" onclick="closeModal('jarOverlay')">取消</button>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" style="color:var(--ink);border-color:var(--line)" onclick="closeModal('jarModal')">取消</button>
       <button class="btn btn-gold" onclick="saveJar()">保存</button>
     </div>
   </div>
 </div>
 
-<!-- Record Modal -->
-<div class="overlay" id="recordOverlay">
-  <div class="sheet">
-    <button class="close-x" onclick="closeModal('recordOverlay')">✕</button>
-    <div class="sheet-title">记一笔</div>
-
-    <div class="field">
-      <label>选择罐子</label>
-      <select id="recJar" onchange="onRecordJarChange()"></select>
+<!-- MODAL: ADD RECORD -->
+<div class="modal-mask" id="recordModal">
+  <div class="modal">
+    <div class="modal-title">记一笔</div>
+    <div class="tab-group">
+      <button class="tab-btn active" id="tabSub" onclick="setRecType('sub')">支出 / 扣减 (-)</button>
+      <button class="tab-btn" id="tabAdd" onclick="setRecType('add')">存入 / 增加 (+)</button>
     </div>
-
-    <div class="field">
-      <label>方向</label>
-      <div class="seg">
-        <button type="button" id="dirInBtn" onclick="setDirection('in')">存入 / 收入</button>
-        <button type="button" id="dirOutBtn" onclick="setDirection('out')">支出 / 取出</button>
-      </div>
+    <div class="form-group">
+      <label class="form-label">选择钱罐</label>
+      <select class="form-select" id="recJarSelect"></select>
     </div>
-
-    <div class="field">
-      <label>金额 (RM)</label>
-      <input type="number" id="recAmount" placeholder="0.00" step="0.01">
+    <div class="form-group">
+      <label class="form-label">金额</label>
+      <input type="number" step="0.01" class="form-input num" id="recAmount" placeholder="0.00">
     </div>
-
-    <div class="field">
-      <label>日期</label>
-      <input type="date" id="recDate">
+    <div class="form-group">
+      <label class="form-label">备注说明（可选）</label>
+      <input type="text" class="form-input" id="recNote" placeholder="例如：午餐、买衣服">
     </div>
-
-    <div class="field">
-      <label>备注（可选）</label>
-      <input type="text" id="recNote" placeholder="例如：补贴家用">
-    </div>
-
-    <div class="sheet-actions">
-      <button class="btn btn-cancel" onclick="closeModal('recordOverlay')">取消</button>
-      <button class="btn btn-gold" onclick="saveRecord()">保存</button>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" style="color:var(--ink);border-color:var(--line)" onclick="closeModal('recordModal')">取消</button>
+      <button class="btn btn-gold" onclick="saveRecord()">确定记入</button>
     </div>
   </div>
 </div>
 
-<!-- Revalue Modal (for investments like stocks whose value fluctuates without cash movement) -->
-<div class="overlay" id="revalueOverlay">
-  <div class="sheet">
-    <button class="close-x" onclick="closeModal('revalueOverlay')">✕</button>
-    <div class="sheet-title">重新估值</div>
-    <div class="hint" id="revalueHint" style="margin-bottom:16px;"></div>
-
-    <div class="field">
-      <label>当前市值 (RM)</label>
-      <input type="number" id="revalueAmount" placeholder="0.00" step="0.01">
-      <div class="hint">填今天股票 / 投资账户的总市值，系统会自动算出涨跌幅并记一笔「重新估值」</div>
+<!-- MODAL: IMPORT DATA -->
+<div class="modal-mask" id="importModal">
+  <div class="modal">
+    <div class="modal-title">导入数据</div>
+    <div class="form-group">
+      <label class="form-label">粘贴备份的数据字符串：</label>
+      <textarea class="form-textarea" id="importText" placeholder="将备份的文本粘贴到这里"></textarea>
     </div>
-
-    <div class="field">
-      <label>备注（可选）</label>
-      <input type="text" id="revalueNote" placeholder="例如：马股组合8月估值">
-    </div>
-
-    <div class="sheet-actions">
-      <button class="btn btn-cancel" onclick="closeModal('revalueOverlay')">取消</button>
-      <button class="btn btn-gold" onclick="saveRevalue()">保存</button>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" style="color:var(--ink);border-color:var(--line)" onclick="closeModal('importModal')">取消</button>
+      <button class="btn btn-gold" onclick="importData()">确认导入</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ---------------- DATA LAYER ---------------- */
-const STORE_KEY = 'moneyjar_jars_v1';
-const REC_KEY = 'moneyjar_records_v1';
+  const COLORS = ['#3a6b53', '#c05a3e', '#c3944a', '#252f47', '#7b5294'];
+  let selectedColor = COLORS[0];
+  let recType = 'sub';
+  let editingJarId = null;
 
-function loadJars(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }catch(e){ return []; } }
-function saveJars(v){ localStorage.setItem(STORE_KEY, JSON.stringify(v)); }
-function loadRecords(){ try{ return JSON.parse(localStorage.getItem(REC_KEY)) || []; }catch(e){ return []; } }
-function saveRecords(v){ localStorage.setItem(REC_KEY, JSON.stringify(v)); }
+  let state = {
+    jars: JSON.parse(localStorage.getItem('mj_jars')) || [],
+    records: JSON.parse(localStorage.getItem('mj_records')) || []
+  };
 
-let jars = loadJars();
-let records = loadRecords();
-
-const EMOJIS = ['💰','🏦','📈','🎯','🐷','🏠','🚗','✈️','🎓','💊','🛒','🎁','📱','🍔','🎉','⚡','🌟','💡','🧾','🍎','☕','🩺'];
-const COLORS = ['#3a6b53','#2f5f8a','#c3944a','#c05a3e','#7a5ea8','#3a7f7a','#8a6d3a','#5a5a8a'];
-
-let jarModalType = 'asset';
-let jarModalEditId = null;
-let jarModalIcon = EMOJIS[0];
-let jarModalColor = COLORS[0];
-let recDirection = 'in';
-
-function fmt(n){
-  const sign = n < 0 ? '-' : '';
-  return sign + 'RM ' + Math.abs(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function todayStr(){ return new Date().toISOString().slice(0,10); }
-function sameMonth(dateStr, ref){
-  const d = new Date(dateStr), r = ref || new Date();
-  return d.getFullYear()===r.getFullYear() && d.getMonth()===r.getMonth();
-}
-
-/* ---------------- COMPUTATION ---------------- */
-function jarRecords(jarId){ return records.filter(r=>r.jarId===jarId); }
-
-function assetBalance(jar){
-  const recs = jarRecords(jar.id);
-  const net = recs.reduce((s,r)=> s + (r.direction==='in'? r.amount : -r.amount), 0);
-  return (jar.initial||0) + net;
-}
-function assetInvestmentStats(jar){
-  const recs = jarRecords(jar.id);
-  const principalNet = recs.filter(r=>!r.revalue).reduce((s,r)=> s + (r.direction==='in'? r.amount : -r.amount), 0);
-  const principal = (jar.initial||0) + principalNet;
-  const gain = recs.filter(r=>r.revalue).reduce((s,r)=> s + (r.direction==='in'? r.amount : -r.amount), 0);
-  const gainPct = principal !== 0 ? (gain/principal*100) : 0;
-  const hasRevalue = recs.some(r=>r.revalue);
-  return { principal, gain, gainPct, hasRevalue };
-}
-function assetMonthProgress(jar){
-  const recs = jarRecords(jar.id).filter(r=>r.direction==='in' && sameMonth(r.date) && !r.revalue);
-  const sum = recs.reduce((s,r)=>s+r.amount,0);
-  if(!jar.plan) return 0;
-  return Math.max(0, Math.min(100, (sum/jar.plan)*100));
-}
-function budgetSpent(jar){
-  const recs = jarRecords(jar.id).filter(r=>sameMonth(r.date));
-  return recs.reduce((s,r)=> s + (r.direction==='out'? r.amount : -r.amount), 0);
-}
-
-/* ---- monthly spend analysis (all 'out' records this month, any jar) ---- */
-function monthName(){
-  const d = new Date();
-  return `${d.getFullYear()}年${d.getMonth()+1}月`;
-}
-function monthOutRecords(){
-  return records.filter(r=> r.direction==='out' && sameMonth(r.date) && !r.revalue);
-}
-function renderSpendAnalysis(){
-  document.getElementById('monthLabel').textContent = monthName();
-  const outRecs = monthOutRecords();
-  const totalSpent = outRecs.reduce((s,r)=>s+r.amount,0);
-  const totalBudget = jars.filter(j=>j.type==='budget').reduce((s,j)=>s+(j.plan||0),0);
-  const remain = totalBudget - jars.filter(j=>j.type==='budget').reduce((s,j)=>s+budgetSpent(j),0);
-
-  const summaryWrap = document.getElementById('spendSummary');
-  summaryWrap.innerHTML = `
-    <div class="spend-stats">
-      <div class="stat-card">
-        <div class="stat-label">本月总支出</div>
-        <div class="stat-value red num">${fmt(totalSpent)}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">预算剩余合计</div>
-        <div class="stat-value ${remain<0?'red':'green'} num">${fmt(remain)}</div>
-      </div>
-    </div>`;
-
-  // breakdown by jar
-  const byJar = {};
-  outRecs.forEach(r=>{ byJar[r.jarId] = (byJar[r.jarId]||0) + r.amount; });
-  const rows = Object.entries(byJar)
-    .map(([jarId, amt])=>({ jar: jars.find(j=>j.id===jarId), amt }))
-    .filter(x=>x.jar)
-    .sort((a,b)=>b.amt-a.amt);
-
-  const bWrap = document.getElementById('spendBreakdown');
-  if(rows.length===0){
-    bWrap.innerHTML = `<div class="empty">本月还没有支出记录，记一笔之后这里会显示分类占比。</div>`;
-  } else {
-    const max = rows[0].amt;
-    bWrap.innerHTML = `<div class="jar-card">` + rows.map(({jar,amt})=>{
-      const pct = totalSpent ? (amt/totalSpent*100) : 0;
-      const widthPct = max ? (amt/max*100) : 0;
-      return `<div class="breakdown-row">
-        <div class="breakdown-top">
-          <span class="breakdown-name">${jar.icon} ${escapeHtml(jar.name)}</span>
-          <span class="breakdown-amt">${fmt(amt)} · ${pct.toFixed(0)}%</span>
-        </div>
-        <div class="breakdown-track"><div class="breakdown-fill" style="width:${widthPct}%;background:${jar.color}"></div></div>
-      </div>`;
-    }).join('') + `</div>`;
+  function saveData() {
+    localStorage.setItem('mj_jars', JSON.stringify(state.jars));
+    localStorage.setItem('mj_records', JSON.stringify(state.records));
+    render();
   }
 
-  // daily chart
-  const card = document.getElementById('dailyChartCard');
-  if(outRecs.length===0){ card.style.display='none'; return; }
-  card.style.display='block';
-  const now = new Date();
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-  const perDay = new Array(daysInMonth).fill(0);
-  outRecs.forEach(r=>{
-    const d = new Date(r.date).getDate();
-    if(d>=1 && d<=daysInMonth) perDay[d-1]+=r.amount;
-  });
-  drawDailyChart('dailyChart', perDay, now.getDate());
-}
+  function initColors() {
+    const el = document.getElementById('colorPicker');
+    el.innerHTML = COLORS.map(c => `
+      <div class="color-opt ${c === selectedColor ? 'active' : ''}" 
+           style="background:${c}" 
+           onclick="selectColor('${c}')"></div>
+    `).join('');
+  }
 
-function drawDailyChart(canvasId, perDay, todayDate){
-  const canvas = document.getElementById(canvasId);
-  const parentWidth = canvas.parentElement.clientWidth - 32;
-  const dpr = window.devicePixelRatio || 1;
-  const cssW = parentWidth, cssH = 110;
-  canvas.width = cssW * dpr; canvas.height = cssH * dpr;
-  canvas.style.width = cssW+'px'; canvas.style.height = cssH+'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,cssW,cssH);
+  function selectColor(c) {
+    selectedColor = c;
+    initColors();
+  }
 
-  const max = Math.max(...perDay, 1);
-  const n = perDay.length;
-  const gap = 2;
-  const barW = Math.max(2,(cssW - gap*(n-1))/n);
-  const chartH = 82;
+  function toggleTypeFields() {
+    const type = document.getElementById('jarType').value;
+    const label = document.getElementById('amountLabel');
+    if (type === 'budget') label.innerText = '本期总预算金额';
+    else if (type === 'target') label.innerText = '目标储备总额';
+    else label.innerText = '初始可用余额';
+  }
 
-  perDay.forEach((val,i)=>{
-    const h = (val/max)*chartH;
-    const x = i*(barW+gap);
-    const y = chartH - h;
-    ctx.fillStyle = (i+1===todayDate) ? '#c3944a' : (val>0 ? '#c05a3e' : '#e7e0d1');
-    ctx.beginPath();
-    const r = Math.min(2, barW/2);
-    ctx.roundRect ? ctx.roundRect(x, y, barW, Math.max(h,1), r) : ctx.rect(x, y, barW, Math.max(h,1));
-    ctx.fill();
-  });
+  function renderJars() {
+    const container = document.getElementById('jarList');
+    if (state.jars.length === 0) {
+      container.innerHTML = `<div class="empty">还没有钱罐，点击上方“+ 新建钱罐”开始规划资金吧！</div>`;
+      return;
+    }
 
-  ctx.fillStyle = '#6b6a63';
-  ctx.font = '10px sans-serif';
-  ctx.fillText('1日', 0, chartH+18);
-  ctx.textAlign = 'right';
-  ctx.fillText(n+'日', cssW, chartH+18);
-  ctx.textAlign = 'left';
-}
+    container.innerHTML = state.jars.map(jar => {
+      let detailHtml = '';
+      let isNeg = jar.balance < 0;
 
-/* ---------------- BOTTLE SVG ---------------- */
-function bottleSvg(color, percent){
-  percent = Math.max(0, Math.min(100, percent));
-  const fillH = 46 * (percent/100);
-  const y = 54 - fillH;
-  return `<svg viewBox="0 0 52 66" fill="none">
-    <rect x="20" y="4" width="12" height="10" rx="3" fill="#d8d2c2"/>
-    <path d="M14 16 Q14 12 20 12 H32 Q38 12 38 16 V54 Q38 62 26 62 Q14 62 14 54 Z" fill="#fff" stroke="#e7e0d1" stroke-width="1.5"/>
-    <clipPath id="clip-${color.replace('#','')}"><path d="M15 17 Q15 13 20 13 H32 Q37 13 37 17 V54 Q37 61 26 61 Q15 61 15 54 Z"/></clipPath>
-    <rect x="14" y="${y}" width="24" height="${fillH+2}" fill="${color}" opacity="0.85" clip-path="url(#clip-${color.replace('#','')})"/>
-  </svg>`;
-}
+      if (jar.type === 'budget') {
+        let pct = Math.max(0, Math.min(100, (jar.balance / jar.initial) * 100));
+        detailHtml = `
+          <div class="jar-detail">
+            <div style="display:flex;justify-content:space-between">
+              <span>预算剩余 ${pct.toFixed(0)}%</span>
+              <span class="num">总额: ¥${jar.initial.toFixed(2)}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${pct}%;background:${jar.color}"></div>
+            </div>
+            ${jar.balance < 0 ? `<div class="tag-over">⚠️ 已超支 ¥${Math.abs(jar.balance).toFixed(2)}</div>` : ''}
+          </div>`;
+      } else if (jar.type === 'target') {
+        let pct = Math.max(0, Math.min(100, (jar.balance / jar.initial) * 100));
+        detailHtml = `
+          <div class="jar-detail">
+            <div style="display:flex;justify-content:space-between">
+              <span>目标进度 ${pct.toFixed(0)}%</span>
+              <span class="num">目标: ¥${jar.initial.toFixed(2)}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${pct}%;background:${jar.color}"></div>
+            </div>
+          </div>`;
+      }
 
-/* ---------------- RENDER ---------------- */
-function render(){
-  saveJars(jars); saveRecords(records);
-
-  const assets = jars.filter(j=>j.type==='asset');
-  const budgets = jars.filter(j=>j.type==='budget');
-
-  const total = assets.reduce((s,j)=>s+assetBalance(j),0);
-  document.getElementById('totalValue').textContent = fmt(total);
-
-  renderSpendAnalysis();
-
-  // asset list
-  const aWrap = document.getElementById('assetList');
-  if(assets.length===0){
-    aWrap.innerHTML = `<div class="empty">还没有资产类罐子。点击右上角「＋ 新增项目」，添加你的第一个存钱罐吧。</div>`;
-  } else {
-    aWrap.innerHTML = assets.map(j=>{
-      const bal = assetBalance(j);
-      const pct = assetMonthProgress(j);
-      const stats = assetInvestmentStats(j);
-      const freqTxt = {none:'不自动', monthly:'每月自动', weekly:'每周自动', yearly:'每年自动'}[j.frequency||'none'];
-      return `<div class="jar-card">
-        <div class="jar-top">
-          <div class="bottle">${bottleSvg(j.color, pct)}</div>
-          <div class="jar-info">
-            <div class="jar-name">${j.icon} ${escapeHtml(j.name)}</div>
-            <div class="jar-value num">${fmt(bal)}</div>
-            <div class="jar-plan">计划 ${fmt(j.plan||0)}/月 · ${freqTxt}</div>
-            ${stats.hasRevalue ? `<div class="jar-plan" style="margin-top:4px;">累计投入 ${fmt(stats.principal)} · 增值 <span style="color:${stats.gain>=0?'var(--green)':'var(--red)'};font-weight:700;">${stats.gain>=0?'+':''}${fmt(stats.gain)}（${stats.gain>=0?'+':''}${stats.gainPct.toFixed(1)}%）</span></div>` : ''}
+      return `
+        <div class="jar-card">
+          <div class="jar-top">
+            <div class="bottle">
+              <svg viewBox="0 0 52 66" fill="none">
+                <path d="M16 8C16 4 20 2 26 2C32 2 36 4 36 8V12H16V8Z" fill="${jar.color}" opacity="0.3"/>
+                <rect x="12" y="12" width="28" height="6" rx="3" fill="${jar.color}"/>
+                <path d="M10 20C10 18 12 17 14 17H38C40 17 42 18 42 20V56C42 61 38 64 33 64H19C14 64 10 61 10 56V20Z" fill="${jar.color}" opacity="0.15" stroke="${jar.color}" stroke-width="2.5"/>
+              </svg>
+            </div>
+            <div class="jar-info">
+              <div class="jar-name">${jar.name}</div>
+              <div class="jar-value num ${isNeg ? 'neg' : ''}">¥ ${jar.balance.toFixed(2)}</div>
+            </div>
           </div>
-          <button class="jar-menu-btn" onclick="toggleActions('${j.id}')">⋯</button>
-        </div>
-        <div class="jar-actions" id="act-${j.id}" style="display:none;">
-          <button class="mini-btn record" onclick="openRecordModal('${j.id}')">记一笔</button>
-          <button class="mini-btn" onclick="openRevalueModal('${j.id}')">重新估值</button>
-          <button class="mini-btn" onclick="openJarModal('${j.id}')">编辑</button>
-          <button class="mini-btn del" onclick="deleteJar('${j.id}')">删除</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  // budget list
-  const bWrap = document.getElementById('budgetList');
-  if(budgets.length===0){
-    bWrap.innerHTML = `<div class="empty">还没有支出预算罐子。点击「＋ 新增预算」，设定每月花费上限。</div>`;
-  } else {
-    bWrap.innerHTML = budgets.map(j=>{
-      const spent = budgetSpent(j);
-      const remain = (j.plan||0) - spent;
-      const pct = j.plan ? Math.max(0,Math.min(100,(spent/j.plan)*100)) : 0;
-      const over = remain < 0;
-      return `<div class="jar-card">
-        <div class="jar-top">
-          <div class="bottle">${bottleSvg(over? '#c05a3e' : j.color, pct)}</div>
-          <div class="jar-info">
-            <div class="jar-name">${j.icon} ${escapeHtml(j.name)}</div>
-            <div class="jar-value num ${remain<0?'neg':''}">${fmt(remain)} <span style="font-size:12px;font-weight:400;color:var(--ink-soft);">剩余</span></div>
-            <div class="jar-plan">本月已花 ${fmt(spent)} / 预算 ${fmt(j.plan||0)}</div>
-            <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${over?'var(--red)':'var(--green)'}"></div></div>
-            ${over? '<div class="tag-over">本月超支</div>' : ''}
+          ${detailHtml}
+          <div class="jar-actions">
+            <button class="mini-btn record" onclick="openRecordModal('${jar.id}')">记一笔</button>
+            <button class="mini-btn del" onclick="deleteJar('${jar.id}')">删除</button>
           </div>
-          <button class="jar-menu-btn" onclick="toggleActions('${j.id}')">⋯</button>
         </div>
-        <div class="jar-actions" id="act-${j.id}" style="display:none;">
-          <button class="mini-btn record" onclick="openRecordModal('${j.id}')">记一笔</button>
-          <button class="mini-btn" onclick="openJarModal('${j.id}')">编辑</button>
-          <button class="mini-btn del" onclick="deleteJar('${j.id}')">删除</button>
-        </div>
-      </div>`;
+      `;
     }).join('');
   }
 
-  // records
-  const rWrap = document.getElementById('recordList');
-  const sorted = [...records].sort((a,b)=> b.date.localeCompare(a.date) || b.id.localeCompare(a.id)).slice(0,40);
-  if(sorted.length===0){
-    rWrap.innerHTML = `<div class="empty">还没有任何记录。点击下方「＋ 记一笔」开始记账。</div>`;
-  } else {
-    rWrap.innerHTML = sorted.map(r=>{
-      const jar = jars.find(j=>j.id===r.jarId);
-      if(!jar) return '';
-      const isIn = r.direction==='in';
-      return `<div class="record-row">
-        <div class="rec-dot" style="background:${isIn?'var(--green)':'var(--red)'}"></div>
-        <div class="rec-mid">
-          <div class="rec-jar">${jar.icon} ${escapeHtml(jar.name)}</div>
-          ${r.note? `<div class="rec-note">${escapeHtml(r.note)}</div>`:''}
-          <div class="rec-date">${r.date}${r.auto? ' · 自动分配':''}${r.revalue? ' · 重新估值':''}</div>
+  function renderRecords() {
+    const container = document.getElementById('recordList');
+    if (state.records.length === 0) {
+      container.innerHTML = `<div class="empty">暂无明细记录</div>`;
+      return;
+    }
+
+    container.innerHTML = state.records.map(rec => {
+      const jar = state.jars.find(j => j.id === rec.jarId) || { name: '已删除钱罐', color: '#999' };
+      const isAdd = rec.type === 'add';
+      return `
+        <div class="record-row">
+          <div class="rec-dot" style="background:${jar.color}"></div>
+          <div class="rec-mid">
+            <div class="rec-jar">${jar.name}</div>
+            <div class="rec-note">${rec.note || '无备注'}</div>
+          </div>
+          <div class="rec-right">
+            <div class="rec-amt num ${isAdd ? 'add' : 'sub'}">${isAdd ? '+' : '-'}${rec.amount.toFixed(2)}</div>
+            <div class="rec-time">${rec.time}</div>
+          </div>
+          <button class="rec-del" onclick="deleteRecord('${rec.id}')">✕</button>
         </div>
-        <div class="rec-amt ${isIn?'in':'out'} num">${isIn?'+':'-'}${fmt(r.amount).replace('RM ','RM ')}</div>
-        <button class="rec-del" onclick="deleteRecord('${r.id}')">✕</button>
-      </div>`;
+      `;
     }).join('');
   }
-}
-function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function toggleActions(id){
-  const el = document.getElementById('act-'+id);
-  el.style.display = el.style.display==='none' ? 'flex' : 'none';
-}
 
-/* ---------------- JAR MODAL ---------------- */
-function buildPickers(){
-  document.getElementById('emojiGrid').innerHTML = EMOJIS.map(e=>
-    `<button type="button" class="${e===jarModalIcon?'active':''}" onclick="pickEmoji('${e}')">${e}</button>`).join('');
-  document.getElementById('colorRow').innerHTML = COLORS.map(c=>
-    `<button type="button" class="swatch ${c===jarModalColor?'active':''}" style="background:${c}" onclick="pickColor('${c}')"></button>`).join('');
-}
-function pickEmoji(e){ jarModalIcon = e; buildPickers(); }
-function pickColor(c){ jarModalColor = c; buildPickers(); }
+  function renderSummary() {
+    const total = state.jars.reduce((acc, j) => acc + j.balance, 0);
+    document.getElementById('totalBalance').innerText = `¥ ${total.toFixed(2)}`;
+    document.getElementById('totalNote').innerText = `共 ${state.jars.length} 个钱罐正在统筹管理中`;
+  }
 
-function setJarType(t){
-  jarModalType = t;
-  document.getElementById('typeAssetBtn').classList.toggle('active', t==='asset');
-  document.getElementById('typeBudgetBtn').classList.toggle('active', t==='budget');
-  document.getElementById('initialField').style.display = t==='asset' ? 'block' : 'none';
-  document.getElementById('freqField').style.display = t==='asset' ? 'block' : 'none';
-  document.getElementById('planLabel').textContent = t==='asset' ? '每月计划存入 (RM)' : '每月预算金额 (RM)';
-}
+  function render() {
+    renderJars();
+    renderRecords();
+    renderSummary();
+  }
 
-function openJarModal(id, forcedType){
-  jarModalEditId = id;
-  const jar = id ? jars.find(j=>j.id===id) : null;
-  jarModalIcon = jar ? jar.icon : EMOJIS[0];
-  jarModalColor = jar ? jar.color : COLORS[Math.floor(Math.random()*COLORS.length)];
-  setJarType(jar ? jar.type : (forcedType||'asset'));
-  document.getElementById('jarModalTitle').textContent = jar ? '编辑罐子' : '新增项目';
-  document.getElementById('jarName').value = jar ? jar.name : '';
-  document.getElementById('jarInitial').value = jar ? (jar.initial||0) : '';
-  document.getElementById('jarPlan').value = jar ? (jar.plan||0) : '';
-  document.getElementById('jarFreq').value = jar ? (jar.frequency||'none') : 'none';
-  buildPickers();
-  document.getElementById('jarOverlay').classList.add('show');
-}
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+  /* MODAL CONTROL */
+  function openAddModal() {
+    editingJarId = null;
+    document.getElementById('jarModalTitle').innerText = '新建钱罐';
+    document.getElementById('jarName').value = '';
+    document.getElementById('jarAmount').value = '';
+    selectedColor = COLORS[0];
+    initColors();
+    toggleTypeFields();
+    document.getElementById('jarModal').classList.add('active');
+  }
 
-function saveJar(){
-  const name = document.getElementById('jarName').value.trim();
-  if(!name){ alert('请输入名称'); return; }
-  const initial = parseFloat(document.getElementById('jarInitial').value)||0;
-  const plan = parseFloat(document.getElementById('jarPlan').value)||0;
-  const freq = document.getElementById('jarFreq').value;
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
 
-  if(jarModalEditId){
-    const jar = jars.find(j=>j.id===jarModalEditId);
-    jar.name = name; jar.icon = jarModalIcon; jar.color = jarModalColor;
-    jar.plan = plan; jar.frequency = freq;
-    if(jar.type==='asset') jar.initial = initial;
-  } else {
-    jars.push({
-      id: 'j'+Date.now()+Math.random().toString(36).slice(2,6),
-      name, icon: jarModalIcon, color: jarModalColor,
-      type: jarModalType,
-      initial: jarModalType==='asset' ? initial : 0,
-      plan, frequency: freq,
-      lastAuto: null,
-      createdAt: todayStr()
+  function saveJar() {
+    const name = document.getElementById('jarName').value.trim();
+    const type = document.getElementById('jarType').value;
+    const amount = parseFloat(document.getElementById('jarAmount').value) || 0;
+
+    if (!name) return alert('请输入钱罐名称');
+
+    state.jars.push({
+      id: Date.now().toString(),
+      name,
+      type,
+      initial: amount,
+      balance: amount,
+      color: selectedColor
+    });
+
+    saveData();
+    closeModal('jarModal');
+  }
+
+  function deleteJar(id) {
+    if (!confirm('确定要删除这个钱罐吗？对应历史明细将保留')) return;
+    state.jars = state.jars.filter(j => j.id !== id);
+    saveData();
+  }
+
+  function openRecordModal(defaultJarId) {
+    if (state.jars.length === 0) return alert('请先创建至少一个钱罐');
+    
+    const select = document.getElementById('recJarSelect');
+    select.innerHTML = state.jars.map(j => `<option value="${j.id}">${j.name}</option>`).join('');
+    if (defaultJarId) select.value = defaultJarId;
+
+    document.getElementById('recAmount').value = '';
+    document.getElementById('recNote').value = '';
+    setRecType('sub');
+    document.getElementById('recordModal').classList.add('active');
+  }
+
+  function setRecType(type) {
+    recType = type;
+    document.getElementById('tabSub').className = `tab-btn ${type === 'sub' ? 'active' : ''}`;
+    document.getElementById('tabAdd').className = `tab-btn ${type === 'add' ? 'active' : ''}`;
+  }
+
+  function saveRecord() {
+    const jarId = document.getElementById('recJarSelect').value;
+    const amount = parseFloat(document.getElementById('recAmount').value);
+    const note = document.getElementById('recNote').value.trim();
+
+    if (!amount || amount <= 0) return alert('请输入有效的金额');
+
+    const jar = state.jars.find(j => j.id === jarId);
+    if (!jar) return;
+
+    if (recType === 'sub') {
+      jar.balance -= amount;
+    } else {
+      jar.balance += amount;
+    }
+
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    state.records.unshift({
+      id: Date.now().toString(),
+      jarId,
+      type: recType,
+      amount,
+      note,
+      time: timeStr
+    });
+
+    saveData();
+    closeModal('recordModal');
+  }
+
+  function deleteRecord(id) {
+    if (!confirm('确定要删除这条明细吗？')) return;
+    state.records = state.records.filter(r => r.id !== id);
+    saveData();
+  }
+
+  /* BACKUP & IMPORT */
+  function exportData() {
+    const backupStr = JSON.stringify(state);
+    navigator.clipboard.writeText(backupStr).then(() => {
+      alert('所有数据已成功复制到剪贴板！你可以粘贴保存到手机备忘录中。');
+    }).catch(() => {
+      prompt('请复制以下数据并保存：', backupStr);
     });
   }
-  closeModal('jarOverlay');
-  render();
-}
 
-function deleteJar(id){
-  if(!confirm('确定删除这个罐子吗？相关记录也会一并删除。')) return;
-  jars = jars.filter(j=>j.id!==id);
-  records = records.filter(r=>r.jarId!==id);
-  render();
-}
-
-/* ---------------- RECORD MODAL ---------------- */
-function openRecordModal(preselectJarId){
-  const sel = document.getElementById('recJar');
-  if(jars.length===0){
-    alert('请先添加一个罐子');
-    return;
+  function openImportModal() {
+    document.getElementById('importText').value = '';
+    document.getElementById('importModal').classList.add('active');
   }
-  sel.innerHTML = jars.map(j=>`<option value="${j.id}">${j.icon} ${escapeHtml(j.name)}（${j.type==='asset'?'资产':'预算'}）</option>`).join('');
-  if(preselectJarId) sel.value = preselectJarId;
-  onRecordJarChange();
-  document.getElementById('recAmount').value = '';
-  document.getElementById('recDate').value = todayStr();
-  document.getElementById('recNote').value = '';
-  document.getElementById('recordOverlay').classList.add('show');
-}
-function onRecordJarChange(){
-  const jar = jars.find(j=>j.id===document.getElementById('recJar').value);
-  setDirection(jar && jar.type==='budget' ? 'out' : 'in');
-}
-function setDirection(d){
-  recDirection = d;
-  document.getElementById('dirInBtn').classList.toggle('active', d==='in');
-  document.getElementById('dirOutBtn').classList.toggle('active', d==='out');
-}
-function saveRecord(){
-  const jarId = document.getElementById('recJar').value;
-  const amount = parseFloat(document.getElementById('recAmount').value);
-  if(!amount || amount<=0){ alert('请输入金额'); return; }
-  const date = document.getElementById('recDate').value || todayStr();
-  const note = document.getElementById('recNote').value.trim();
-  records.push({ id:'r'+Date.now()+Math.random().toString(36).slice(2,6), jarId, direction:recDirection, amount, date, note, auto:false });
-  closeModal('recordOverlay');
-  render();
-}
-function deleteRecord(id){
-  if(!confirm('删除这条记录？')) return;
-  records = records.filter(r=>r.id!==id);
-  render();
-}
 
-/* ---------------- REVALUE (for stocks / investments) ---------------- */
-let revalueJarId = null;
-function openRevalueModal(jarId){
-  revalueJarId = jarId;
-  const jar = jars.find(j=>j.id===jarId);
-  const bal = assetBalance(jar);
-  document.getElementById('revalueHint').textContent = `${jar.icon} ${jar.name} 当前记录余额为 ${fmt(bal)}，输入最新市值后会自动记一笔涨跌差额，不影响你的每月存钱计划进度。`;
-  document.getElementById('revalueAmount').value = bal.toFixed(2);
-  document.getElementById('revalueNote').value = '';
-  document.getElementById('revalueOverlay').classList.add('show');
-}
-function saveRevalue(){
-  const jar = jars.find(j=>j.id===revalueJarId);
-  const newVal = parseFloat(document.getElementById('revalueAmount').value);
-  if(isNaN(newVal)){ alert('请输入市值'); return; }
-  const bal = assetBalance(jar);
-  const diff = newVal - bal;
-  if(Math.abs(diff) < 0.005){ closeModal('revalueOverlay'); return; }
-  const note = document.getElementById('revalueNote').value.trim() || '重新估值';
-  records.push({
-    id:'r'+Date.now()+Math.random().toString(36).slice(2,6),
-    jarId: jar.id,
-    direction: diff>0 ? 'in' : 'out',
-    amount: Math.abs(diff),
-    date: todayStr(),
-    note,
-    auto:false,
-    revalue:true
-  });
-  closeModal('revalueOverlay');
-  render();
-}
-
-/* ---------------- AUTO PLANS ---------------- */
-function dueForAuto(jar){
-  if(!jar.plan || jar.frequency==='none') return false;
-  if(!jar.lastAuto) return true;
-  const last = new Date(jar.lastAuto), now = new Date();
-  const days = (now - last)/(1000*60*60*24);
-  if(jar.frequency==='weekly') return days >= 7;
-  if(jar.frequency==='monthly') return days >= 28 && now.getMonth()!==last.getMonth();
-  if(jar.frequency==='yearly') return days >= 360;
-  return false;
-}
-function applyAutoPlans(){
-  let count = 0;
-  jars.filter(j=>j.type==='asset').forEach(j=>{
-    if(dueForAuto(j)){
-      records.push({ id:'r'+Date.now()+Math.random().toString(36).slice(2,6), jarId:j.id, direction:'in', amount:j.plan, date:todayStr(), note:'自动分配', auto:true });
-      j.lastAuto = todayStr();
-      count++;
+  function importData() {
+    const raw = document.getElementById('importText').value.trim();
+    if (!raw) return alert('请粘贴数据');
+    try {
+      const data = JSON.parse(raw);
+      if (data.jars && data.records) {
+        state = data;
+        saveData();
+        closeModal('importModal');
+        alert('数据恢复成功！');
+      } else {
+        alert('数据格式不正确！');
+      }
+    } catch (e) {
+      alert('解析失败，请输入有效的代码数据！');
     }
-  });
+  }
+
+  // INIT
+  initColors();
   render();
-  alert(count>0 ? `已自动分配 ${count} 个罐子的月度计划金额` : '目前没有到期需要自动分配的罐子');
-}
-
-/* ---------------- BACKUP ---------------- */
-function exportBackup(){
-  const data = JSON.stringify({jars, records}, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `钱罐备份_${todayStr()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function importBackup(evt){
-  const file = evt.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try{
-      const data = JSON.parse(e.target.result);
-      if(!confirm('导入将覆盖当前所有数据，确定继续吗？')) return;
-      jars = data.jars || [];
-      records = data.records || [];
-      render();
-    }catch(err){ alert('文件格式不正确'); }
-  };
-  reader.readAsText(file);
-  evt.target.value = '';
-}
-
-/* ---------------- INIT ---------------- */
-buildPickers();
-setJarType('asset');
-setDirection('in');
-render();
-window.addEventListener('resize', ()=>{ if(document.getElementById('dailyChartCard').style.display!=='none') renderSpendAnalysis(); });
 </script>
+
 </body>
 </html>
