@@ -1,0 +1,491 @@
+<!-- Rates Modal - Enhanced Version with Moomoo Support -->
+<div class="overlay" id="ratesOverlay">
+  <div class="sheet">
+    <button class="close-x" onclick="closeModal('ratesOverlay')">✕</button>
+    <div class="sheet-title">💱 汇率管理</div>
+    
+    <!-- Tabs Navigation -->
+    <div class="rates-tabs">
+      <button class="rates-tab-btn active" onclick="switchRatesTab('status')">
+        ℹ️ 汇率状态
+      </button>
+      <button class="rates-tab-btn" onclick="switchRatesTab('manual')">
+        ✏️ 手动设置
+      </button>
+      <button class="rates-tab-btn" onclick="switchRatesTab('moomoo')">
+        📱 Moomoo导入
+      </button>
+      <button class="rates-tab-btn" onclick="switchRatesTab('api')">
+        📡 实时汇率
+      </button>
+    </div>
+
+    <!-- Tab 1: Status Panel -->
+    <div id="rates-status-panel" class="rates-panel active">
+      <div id="ratesStatusDisplay" class="rates-status-box">
+        <div style="text-align: center; padding: 20px; color: var(--ink-soft);">
+          正在加载...
+        </div>
+      </div>
+      <div id="ratesCurrentValues" style="margin-top: 16px; padding: 12px; background: var(--card); border-radius: 12px;">
+        <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--ink-soft);">当前汇率 (对标 MYR)</div>
+        <div id="ratesTable" style="font-size: 12px; line-height: 1.8;">
+          <!-- 动态生成 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Manual Setting Panel -->
+    <div id="rates-manual-panel" class="rates-panel" style="display:none;">
+      <div class="hint">手动输入单个货币的汇率（以 MYR 为基准）</div>
+      
+      <div id="manualRatesInputs">
+        <!-- 动态生成 -->
+      </div>
+      
+      <button class="btn btn-gold" onclick="saveManualRates()" style="margin-top: 16px; width: 100%;">
+        💾 保存手动设置
+      </button>
+    </div>
+
+    <!-- Tab 3: Moomoo Import Panel -->
+    <div id="rates-moomoo-panel" class="rates-panel" style="display:none;">
+      <div class="hint">
+        📲 从 Moomoo 应用复制汇率信息并粘贴到下方<br>
+        <strong>格式示例：</strong><br>
+        • USD 1 = 7.30 CNY<br>
+        • 1 USD = ¥ 7.30<br>
+        • EUR 1 = 8.20 MYR
+      </div>
+      
+      <div class="field">
+        <label for="moomooInput">粘贴汇率信息</label>
+        <textarea id="moomooInput" 
+                  placeholder="粘贴 Moomoo 的汇率信息&#10;&#10;例如:&#10;USD 1 = 7.30 CNY&#10;或&#10;1 USD = ¥ 7.30" 
+                  style="width:100%; height:120px; padding: 12px; border: 1.5px solid var(--line); border-radius: 12px; font-family: monospace; font-size: 12px; resize: vertical;">
+        </textarea>
+      </div>
+      
+      <div id="moomooResult" style="margin-top: 12px; min-height: 40px;"></div>
+      
+      <button class="btn btn-gold" onclick="importFromMoomoo()" style="margin-top: 12px; width: 100%;">
+        ✅ 导入 Moomoo 汇率
+      </button>
+    </div>
+
+    <!-- Tab 4: Live API Panel -->
+    <div id="rates-api-panel" class="rates-panel" style="display:none;">
+      <div class="hint">
+        📡 从市场实时获取汇率（open.er-api.com）<br>
+        <strong>更新频率：</strong> 约 15 分钟延迟<br>
+        <strong>用途：</strong> 补充非美股货币的参考汇率
+      </div>
+      
+      <div id="apiStatus" style="margin: 16px 0; padding: 12px; background: var(--card); border-radius: 12px; font-size: 12px;"></div>
+      
+      <button class="btn btn-gold" id="fetchApiBtn" onclick="fetchRatesFromAPI()" style="width: 100%; margin-bottom: 8px;">
+        🔄 立即获取实时汇率
+      </button>
+      
+      <button class="btn" onclick="scheduleAutoUpdate()" style="width: 100%; background: #fff; color: var(--ink); border: 1.5px solid var(--line);">
+        ⏰ 设置自动更新 (每小时)
+      </button>
+      
+      <div id="apiNote" style="margin-top: 12px; padding: 8px; background: var(--green-light); border-radius: 8px; font-size: 11px; color: var(--green); display: none;">
+        ✅ 已启用自动更新
+      </div>
+    </div>
+
+    <div class="sheet-actions" style="margin-top: 20px;">
+      <button class="btn btn-cancel" onclick="closeModal('ratesOverlay')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rates-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--line);
+    overflow-x: auto;
+  }
+  
+  .rates-tab-btn {
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  
+  .rates-tab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+  
+  .rates-tab-btn:hover {
+    color: var(--ink);
+  }
+  
+  .rates-panel {
+    animation: fadeIn 0.2s ease;
+  }
+  
+  .rates-panel.active {
+    display: block !important;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .rates-status-box {
+    padding: 16px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  
+  .rates-status-text {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .rates-status-detail {
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  
+  #manualRatesInputs {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  
+  .manual-rate-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  
+  .manual-rate-row input {
+    padding: 10px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+  
+  .manual-rate-row input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  
+  .manual-rate-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+</style>
+
+<script>
+/**
+ * 切换汇率设置标签页
+ */
+function switchRatesTab(tabName) {
+  // 隐藏所有面板
+  document.querySelectorAll('.rates-panel').forEach(panel => {
+    panel.classList.remove('active');
+  });
+  
+  // 取消所有标签的激活状态
+  document.querySelectorAll('.rates-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // 显示选中的面板
+  const panel = document.getElementById(`rates-${tabName}-panel`);
+  if (panel) {
+    panel.classList.add('active');
+  }
+  
+  // 激活选中的标签
+  event.target.classList.add('active');
+  
+  // 加载特定标签的数据
+  if (tabName === 'status') {
+    updateRatesStatusDisplay();
+  } else if (tabName === 'manual') {
+    initManualRatesInputs();
+  } else if (tabName === 'api') {
+    updateAPIStatus();
+  }
+}
+
+/**
+ * 更新汇率状态显示
+ */
+function updateRatesStatusDisplay() {
+  const status = window.RatesManager.getRatesStatus();
+  const display = document.getElementById('ratesStatusDisplay');
+  
+  if (!display) return;
+  
+  const colors = {
+    'green': '#3a6b53',
+    'orange': '#c3944a',
+    'red': '#c05a3e'
+  };
+  
+  const statusBox = `
+    <div class="rates-status-box">
+      <div class="rates-status-text" style="color: ${colors[status.color]};">
+        ${status.text}
+      </div>
+      <div class="rates-status-detail">
+        <div><strong>来源：</strong> ${status.sourceConfig.name}</div>
+        <div><strong>最后更新：</strong> ${new Date(status.timestamp).toLocaleString('zh-CN')}</div>
+        <div><strong>备注：</strong> ${status.note}</div>
+      </div>
+    </div>
+  `;
+  
+  display.innerHTML = statusBox;
+  
+  // 显示当前汇率表
+  const ratesTable = document.getElementById('ratesTable');
+  if (ratesTable && status.rates) {
+    const ratesRows = Object.entries(status.rates)
+      .map(([code, rate]) => {
+        if (code === 'MYR') return '';
+        return `<div>• 1 ${code} = ${rate.toFixed(4)} MYR</div>`;
+      })
+      .filter(r => r !== '')
+      .join('');
+    
+    ratesTable.innerHTML = ratesRows;
+  }
+}
+
+/**
+ * 初始化手动汇率输入
+ */
+function initManualRatesInputs() {
+  const current = window.RatesManager.loadRates();
+  const rates = current.rates || {};
+  const container = document.getElementById('manualRatesInputs');
+  
+  if (!container) return;
+  
+  const CURRENCIES = ['CNY', 'USD', 'SGD', 'EUR', 'HKD', 'JPY'];
+  
+  const inputs = CURRENCIES.map(code => `
+    <div>
+      <div class="manual-rate-label">1 ${code} = ? MYR</div>
+      <div class="manual-rate-row">
+        <input type="number" 
+               id="rate_${code}" 
+               value="${(rates[code] || 1).toFixed(4)}" 
+               step="0.0001" 
+               min="0.0001"
+               placeholder="输入汇率">
+        <span style="text-align: right; font-size: 11px; color: var(--ink-soft); padding: 0 4px;">
+          MYR
+        </span>
+      </div>
+    </div>
+  `).join('');
+  
+  container.innerHTML = inputs;
+}
+
+/**
+ * 保存手动设置的汇率
+ */
+function saveManualRates() {
+  try {
+    const CURRENCIES = ['CNY', 'USD', 'SGD', 'EUR', 'HKD', 'JPY'];
+    const ratesData = { MYR: 1.0 };
+    
+    for (const code of CURRENCIES) {
+      const input = document.getElementById(`rate_${code}`);
+      if (input) {
+        const rate = parseFloat(input.value);
+        if (!isNaN(rate) && rate > 0) {
+          ratesData[code] = rate;
+        }
+      }
+    }
+    
+    const result = window.RatesManager.saveRates(
+      ratesData,
+      window.RatesManager.RATE_SOURCES.MANUAL,
+      '用户手动设置'
+    );
+    
+    if (result) {
+      alert('✅ 汇率已保存');
+      updateRatesStatusDisplay();
+    } else {
+      alert('❌ 保存失败，请重试');
+    }
+  } catch (err) {
+    alert('❌ 错误: ' + err.message);
+  }
+}
+
+/**
+ * 从Moomoo导入汇率
+ */
+function importFromMoomoo() {
+  try {
+    const text = document.getElementById('moomooInput').value.trim();
+    
+    if (!text) {
+      alert('请先粘贴 Moomoo 的汇率信息');
+      return;
+    }
+    
+    const result = window.RatesManager.importMoomooRates(text);
+    const resultDiv = document.getElementById('moomooResult');
+    
+    if (result.success) {
+      resultDiv.innerHTML = `
+        <div style="padding: 12px; background: var(--green-light); border-radius: 8px; color: var(--green);">
+          <strong>✅ 导入成功！</strong><br>
+          已识别 ${result.parsedCount} 个汇率<br>
+          <small>${result.note}</small>
+        </div>
+      `;
+      
+      // 3秒后关闭弹窗
+      setTimeout(() => {
+        closeModal('ratesOverlay');
+        updateRatesStatusDisplay();
+      }, 2000);
+    } else {
+      resultDiv.innerHTML = `
+        <div style="padding: 12px; background: var(--red-light); border-radius: 8px; color: var(--red);">
+          <strong>❌ 导入失败</strong><br>
+          ${result.error}
+        </div>
+      `;
+    }
+  } catch (err) {
+    alert('❌ 错误: ' + err.message);
+  }
+}
+
+/**
+ * 从API获取实时汇率
+ */
+async function fetchRatesFromAPI() {
+  try {
+    const btn = document.getElementById('fetchApiBtn');
+    const statusDiv = document.getElementById('apiStatus');
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ 正在获取...';
+    
+    const result = await window.RatesManager.fetchLiveRates();
+    
+    if (result.success) {
+      statusDiv.innerHTML = `
+        <div style="color: var(--green); font-weight: 700;">
+          ✅ 获取成功！已更新 ${Object.keys(result.rates).length} 个货币汇率
+        </div>
+      `;
+      btn.textContent = '🔄 立即获取实时汇率';
+    } else {
+      statusDiv.innerHTML = `
+        <div style="color: var(--red); font-weight: 700;">
+          ❌ 获取失败: ${result.error}
+        </div>
+      `;
+      btn.textContent = '🔄 重试';
+    }
+    
+    btn.disabled = false;
+    updateRatesStatusDisplay();
+  } catch (err) {
+    alert('❌ 错误: ' + err.message);
+    document.getElementById('fetchApiBtn').disabled = false;
+    document.getElementById('fetchApiBtn').textContent = '🔄 立即获取实时汇率';
+  }
+}
+
+/**
+ * 设置自动更新
+ */
+function scheduleAutoUpdate() {
+  if (window._ratesAutoUpdateScheduled) {
+    alert('✅ 自动更新已启用（每小时一次）');
+    return;
+  }
+  
+  // 立即更新一次
+  fetchRatesFromAPI();
+  
+  // 每小时更新一次
+  window._ratesAutoUpdateInterval = setInterval(() => {
+    window.RatesManager.fetchLiveRates();
+  }, 3600000); // 1小时
+  
+  window._ratesAutoUpdateScheduled = true;
+  
+  document.getElementById('apiNote').style.display = 'block';
+  alert('✅ 已启用自动更新（每小时）');
+}
+
+/**
+ * 更新API状态显示
+ */
+function updateAPIStatus() {
+  const statusDiv = document.getElementById('apiStatus');
+  const status = window.RatesManager.getRatesStatus();
+  
+  if (status.source === window.RatesManager.RATE_SOURCES.LIVE_API) {
+    statusDiv.innerHTML = `
+      <div style="color: var(--green); font-weight: 700;">
+        ✅ 当前使用实时汇率 (${status.daysLeft}天后过期)
+      </div>
+    `;
+  } else {
+    statusDiv.innerHTML = `
+      <div style="color: var(--ink-soft); font-size: 11px;">
+        当前来源: ${status.sourceConfig.name}
+      </div>
+    `;
+  }
+  
+  if (window._ratesAutoUpdateScheduled) {
+    document.getElementById('apiNote').style.display = 'block';
+  }
+}
+
+/**
+ * 打开汇率设置模态时的初始化
+ */
+function openRatesModal() {
+  const overlay = document.getElementById('ratesOverlay');
+  if (overlay) {
+    overlay.classList.add('show');
+    updateRatesStatusDisplay();
+  }
+}
+</script>
