@@ -249,9 +249,11 @@ function importMoomooRates(moomooText) {
       
       // 如果都不是MYR，先临时存储
       if (fromCurr === 'MYR') {
-        ratesData[toCurr] = parseFloat(amount.toFixed(4));
+        // 文本含义: 1 MYR = amount toCurr → 1 toCurr = 1/amount MYR
+        ratesData[toCurr] = parseFloat((1 / amount).toFixed(4));
       } else if (toCurr === 'MYR') {
-        ratesData[fromCurr] = parseFloat((1 / amount).toFixed(4));
+        // 文本含义: 1 fromCurr = amount MYR → 直接存
+        ratesData[fromCurr] = parseFloat(amount.toFixed(4));
       } else {
         // 两个都不是MYR，后续处理
         ratesData[`_temp_${fromCurr}_${toCurr}`] = amount;
